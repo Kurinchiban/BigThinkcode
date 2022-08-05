@@ -44,16 +44,27 @@ class PaperCardSpider(scrapy.Spider):
         rate = response.xpath(
             '//div[@class="product-price-display col-lg-12"]/span/text()').get().strip()
         image = response.xpath(
-            '//div[@class="inner-container col-sm-6  "]/script/@src').getall()
+            '//div[@class="thumbs-container col-lg-12 hidden-xs"]//img/@src').getall()
         get_front_content = response.xpath(
             '//div[@class="product-front-verse"]/text()').getall()
         front_content = self.cleanup_list(get_front_content)
         get_inside_content = response.xpath(
             '//div[@class="product-inside-verse"]/text()').getall()
         inside_content = self.cleanup_list(get_inside_content)
+        product_content = {}
         get_product_content = response.xpath(
             '//div[@class="product-display-long-description col-lg-12"]/p/text()').getall()
-        product_content = self.cleanup_list(get_product_content)
+        cleaned_product_content = self.cleanup_list(get_product_content)
+        get_product_points = response.xpath(
+            '//div[@class="product-display-long-description col-lg-12"]//ul//li/text()').getall()
+        product_content['content']=cleaned_product_content
+        product_content['points']=get_product_points 
+        if product_content['content'] == []:
+            print ("True")
+            get_product_content = response.xpath(
+            '//div[@class="product-display-long-description col-lg-12"]/text()').getall()
+            cleaned_product_content = self.cleanup_list(get_product_content)
+            product_content['content']=cleaned_product_content
         get_item_content = response.xpath(
             '//div[@class="cartridge-spacing col-lg-12"]//text()').getall()
         item_content = self.cleanup_list(get_item_content)
